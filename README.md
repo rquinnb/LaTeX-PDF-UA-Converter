@@ -245,16 +245,16 @@ Glyph /yourglyphname not in lookup table - SKIPPED
 
 ## Features
 
-✅ **Automatic ToUnicode fixing** - Resolves missing character mappings
-✅ **Semantic structure tags** - H1/H2/H3/P tags based on font size
-✅ **Proper heading hierarchy** - H1 as first heading, proper nesting
-✅ **Link tagging** - Hyperlinks properly tagged and nested
-✅ **Document container** - Required Document element for PDF/UA
-✅ **ParentTree creation** - Links marked content to structure tree
-✅ **Artifact marking** - Page numbers and footers marked as decorative
-✅ **Batch processing** - Convert multiple PDFs at once
-✅ **Non-embedded font detection** - Warns about source PDF issues
-✅ **Automatic update checking** - Notifies when new version available
+✅ **Automatic ToUnicode fixing** - Resolves missing character mappings  
+✅ **Semantic structure tags** - H1/H2/H3/P tags based on font size  
+✅ **Proper heading hierarchy** - H1 as first heading, proper nesting  
+✅ **Link tagging** - Hyperlinks properly tagged and nested  
+✅ **Document container** - Required Document element for PDF/UA  
+✅ **ParentTree creation** - Links marked content to structure tree  
+✅ **Artifact marking** - Page numbers and footers marked as decorative  
+✅ **Batch processing** - Convert multiple PDFs at once  
+✅ **Non-embedded font detection** - Warns about source PDF issues  
+✅ **Automatic update checking** - Notifies when new version available  
 
 ## Version History
 
