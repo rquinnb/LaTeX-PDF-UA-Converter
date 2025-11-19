@@ -2,9 +2,9 @@
 
 Converts LaTeX-generated PDFs to PDF/UA (Universal Accessibility) compliant format by fixing missing ToUnicode mappings and adding proper structure tags with semantic headings.
 
-**Developed by:** Ryan Black\n
-**Email:** rquinnb@ksu.edu
-**Version:** 1.1 Alpha
+**Developed by:** Ryan Black  
+**Email:** rquinnb@ksu.edu  
+**Version:** 1.1 Alpha  
 **Repository:** https://github.com/rquinnb/LaTeX-PDF-UA-Converter
 
 ## What is PDF/UA?
