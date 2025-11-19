@@ -7,15 +7,19 @@ by fixing missing ToUnicode mappings and adding proper structure tags.
 
 Developed by: Ryan Black
 Email: rquinnb@ksu.edu for issues
+Version: 1.1 Alpha
+Repository: https://github.com/rquinnb/LaTeX-PDF-UA-Converter
 """
 
-import pikepdf
-from pikepdf import Pdf, Dictionary, Name, Array, String, Stream
+__version__ = "1.1.0-alpha"
+__repo_url__ = "https://github.com/rquinnb/LaTeX-PDF-UA-Converter"
+
 import sys
 import re
 import argparse
-from pathlib import Path
 import requests
+from pathlib import Path
+from pikepdf import Pdf, Dictionary, Name, Array, String, Stream
 from bs4 import BeautifulSoup
 
 try:
@@ -24,7 +28,30 @@ except ImportError:
     print("Error: latex_glyph_symbols.py not found in the same directory.")
     sys.exit(1)
 
+def check_for_updates():
+    """Check if a newer version is available on GitHub"""
+    try:
+        response = requests.get(
+            "https://api.github.com/repos/rquinnb/LaTeX-PDF-UA-Converter/releases/latest",
+            timeout=5
+        )
+        if response.status_code == 200:
+            data = response.json()
+            latest_version = data.get('tag_name', '').lstrip('v')
+            current_version = __version__.replace('-alpha', '').replace('-beta', '')
+
+            if latest_version and latest_version > current_version:
+                print(f"\n  Update available: v{latest_version} (current: v{__version__})")
+                print(f"  Download: {data.get('html_url', __repo_url__)}\n")
+                return True
+    except:
+        pass  # Silently fail if GitHub is unreachable
+    return False
+
 def main():
+    # Check for updates (non-blocking)
+    check_for_updates()
+
     parser = argparse.ArgumentParser(
         description='Convert PDF(s) to PDF/UA compliant format',
         epilog='Examples:\n'
@@ -467,6 +494,39 @@ def convert_pdf(input_file, output_file, verbose=False):
     metadata_stream.Type = Name.Metadata
     metadata_stream.Subtype = Name.XML
     pdf.Root.Metadata = metadata_stream
+
+    if verbose:
+        print("Checking for non-embedded fonts")
+
+    # Check for non-embedded fonts (PDF/UA violation)
+    non_embedded_fonts = []
+    for page in pdf.pages:
+        if '/Resources' in page and '/Font' in page.Resources:
+            fonts = page.Resources.Font
+            for font_name, font_obj in fonts.items():
+                if '/BaseFont' in font_obj:
+                    base_font = str(font_obj.BaseFont)
+                    subtype = str(font_obj.get('/Subtype', 'Unknown'))
+
+                    # Check if font is embedded
+                    is_embedded = False
+                    if '/FontDescriptor' in font_obj:
+                        font_desc = font_obj.FontDescriptor
+                        is_embedded = any(key in font_desc for key in ['/FontFile', '/FontFile2', '/FontFile3'])
+
+                    if not is_embedded and subtype != '/Type3':  # Type3 fonts don't need embedding
+                        if base_font not in non_embedded_fonts:
+                            non_embedded_fonts.append(base_font)
+
+    if non_embedded_fonts:
+        print(f"\n  WARNING: PDF/UA VIOLATION DETECTED!")
+        print(f"  The following fonts are NOT embedded:")
+        for font in non_embedded_fonts:
+            print(f"    - {font}")
+        print(f"\n  PDF/UA requires ALL fonts to be embedded.")
+        print(f"  This is an issue with the SOURCE PDF, not this converter.")
+        print(f"  Please recreate the source PDF with embedded fonts.")
+        print(f"\n  Continuing anyway, but output will NOT be PDF/UA compliant...\n")
 
     if verbose:
         print("Fixing font ToUnicode mappings")
